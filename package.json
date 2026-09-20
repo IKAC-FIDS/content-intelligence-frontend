@@ -1,0 +1,17 @@
+{
+  "name": "content-intelligence-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm --workspace apps/web run dev",
+    "build": "npm --workspace apps/web run build",
+    "test": "npm --workspace apps/web run test",
+    "typecheck": "npm --workspace apps/web run typecheck"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2"
+  }
+}
