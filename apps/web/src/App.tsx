@@ -1,8 +1,8 @@
 import { useEffect, type ReactNode } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Dashboard } from '@/app/Dashboard'
-import { ForbiddenPage } from '@/app/ForbiddenPage'
 import { NotFoundPage } from '@/app/NotFoundPage'
+import { AppShell } from '@/app/shell/AppShell'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
 import { initializeSession } from '@/lib/auth'
 import { getProtectedRouteDecision } from '@/lib/navigation'
@@ -19,7 +19,7 @@ export function Protected({ children }: { children: ReactNode }) {
     const from = `${location.pathname}${location.search}${location.hash}`
     return <Navigate to="/login" replace state={{ from }} />
   }
-  if (decision === 'forbidden') return <ForbiddenPage />
+  if (decision === 'forbidden') return children
   return children
 }
 
@@ -29,7 +29,9 @@ export default function App() {
 
   return <Routes>
     <Route path="/login" element={<LoginPage />} />
-    <Route path="/" element={<Protected><Dashboard /></Protected>} />
-    <Route path="*" element={<NotFoundPage />} />
+    <Route element={<Protected><AppShell /></Protected>}>
+      <Route index element={<Dashboard />} />
+      <Route path="*" element={<NotFoundPage />} />
+    </Route>
   </Routes>
 }

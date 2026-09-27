@@ -1,9 +1,7 @@
-import { useState } from 'react'
-import { Activity, BrainCircuit, Building2, CheckCircle2, KeyRound, LogOut, ShieldCheck } from 'lucide-react'
-import { logout, logoutAll } from '@/lib/auth'
+import { Activity, Building2, CheckCircle2, KeyRound, ShieldCheck } from 'lucide-react'
+import { Badge, SurfaceCard } from '@/components/ui'
+import { PageContainer, PageHeader } from '@/components/PageStates'
 import { useAuthStore } from '@/store/authStore'
-import { Badge, Button, SurfaceCard } from '@/components/ui'
-import { ThemeSelector } from '@/components/ThemeSelector'
 
 const metrics = [
   { key: 'tenant', label: 'سازمان فعال', icon: Building2 },
@@ -13,21 +11,7 @@ const metrics = [
 
 export function Dashboard() {
   const user = useAuthStore((state) => state.user)
-  const [busy, setBusy] = useState<'current' | 'all' | null>(null)
   const values = { tenant: user?.organizationId ? 'فعال' : 'سطح پلتفرم', role: user?.roleName || user?.role || '—', permissions: String(user?.permissions.length ?? 0) }
 
-  async function endSession(allSessions: boolean) {
-    if (busy) return
-    setBusy(allSessions ? 'all' : 'current')
-    try {
-      if (allSessions) await logoutAll()
-      else await logout()
-    } catch {
-      // Both services clear local state in finally, even when revocation is already unavailable.
-    } finally {
-      setBusy(null)
-    }
-  }
-
-  return <div className="app-shell"><header className="app-header"><div className="app-identity"><span className="app-logo"><BrainCircuit size={23} /></span><div><strong>Content Intelligence</strong><small>سکوی هوشمندی محتوا</small></div></div><div className="header-actions"><ThemeSelector /><Button variant="ghost" disabled={busy !== null} onClick={() => void endSession(true)}>خروج از همه دستگاه‌ها</Button><Button variant="ghost" disabled={busy !== null} onClick={() => void endSession(false)}><LogOut size={17} /> {busy === 'current' ? 'در حال خروج…' : 'خروج'}</Button></div></header><main className="dashboard"><SurfaceCard className="hero"><div><Badge tone="primary"><ShieldCheck size={14} /> زیرساخت پلتفرم</Badge><h1>سلام، {user?.fullName}</h1><p>هویت، سازمان و کنترل دسترسی آماده است. قابلیت‌های محصول در مراحل بعد روی این زیرساخت توسعه پیدا می‌کنند.</p></div><div className="hero-status"><CheckCircle2 /><span><strong>سامانه آماده است</strong><small>نشست و دسترسی شما تأیید شد</small></span></div></SurfaceCard><div className="metric-grid">{metrics.map(({ key, label, icon: Icon }) => <SurfaceCard className="metric-card" key={key}><div><span>{label}</span><strong>{values[key as keyof typeof values]}</strong></div><i><Icon size={21} /></i></SurfaceCard>)}</div><SurfaceCard className="access-panel"><header><div><span className="eyebrow">اطلاعات نشست</span><h2>وضعیت دسترسی</h2></div><Badge tone="success"><CheckCircle2 size={13} /> فعال</Badge></header><dl><div><dt>ایمیل</dt><dd dir="ltr">{user?.email}</dd></div><div><dt>کد نقش</dt><dd>{user?.roleCode || '—'}</dd></div><div><dt>شناسه سازمان</dt><dd dir="ltr">{user?.organizationId || '—'}</dd></div></dl></SurfaceCard></main></div>
+  return <PageContainer><PageHeader title={`سلام، ${user?.fullName ?? ''}`} description="هویت، سازمان و کنترل دسترسی شما برای استفاده از سامانه آماده است." /><SurfaceCard className="home-status"><Badge tone="primary"><ShieldCheck size={14} /> زیرساخت پلتفرم</Badge><div className="home-status-message"><CheckCircle2 /><span><strong>نشست فعال است</strong><small>دسترسی شما با اطلاعات فعلی سازمان تأیید شده است.</small></span></div></SurfaceCard><div className="metric-grid">{metrics.map(({ key, label, icon: Icon }) => <SurfaceCard className="metric-card" key={key}><div><span>{label}</span><strong>{values[key as keyof typeof values]}</strong></div><i><Icon size={21} /></i></SurfaceCard>)}</div><SurfaceCard className="access-panel"><header><div><span className="eyebrow">اطلاعات نشست</span><h2>وضعیت دسترسی</h2></div><Badge tone="success"><CheckCircle2 size={13} /> فعال</Badge></header><dl><div><dt>ایمیل</dt><dd dir="ltr">{user?.email}</dd></div><div><dt>کد نقش</dt><dd>{user?.roleCode || '—'}</dd></div><div><dt>شناسه سازمان</dt><dd dir="ltr">{user?.organizationId || '—'}</dd></div></dl></SurfaceCard></PageContainer>
 }
