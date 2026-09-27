@@ -1,17 +1,18 @@
 # Content Intelligence Frontend
 
-Deployment-ready first frontend slice for the Content Intelligence platform.
+Frontend foundation for the Content Intelligence platform.
 
-The initial UI foundation carries forward the reusable visual system from the
-CRM frontend: BYekan typography, RTL layout, light/dark/system themes, design
-tokens, and shared button, input, card, badge, and surface components. The
-product-specific screens remain isolated from CRM business features.
+The UI foundation includes BYekan typography, RTL layout,
+light/dark/system themes, design tokens, authentication/session restoration,
+and shared button, input, card, badge, and surface components. Product domain
+features are intentionally deferred to later stages.
 
 ## Local
 npm install
 npm run dev
 
-For direct local backend access set `VITE_API_URL=http://10.10.20.59:3001/api` in a local untracked env file if needed.
+API routing is configured with `VITE_API_URL`. Copy `.env.example` to an
+untracked `.env.local` file when a different development endpoint is needed.
 
 ## Server
 The Docker build uses `/api`; Nginx proxies it to `content-intelligence-backend-api:3000` on the shared Docker network.
