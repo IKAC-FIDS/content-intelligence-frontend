@@ -20,6 +20,10 @@ export const PERMISSIONS = {
   TEAM_MANAGE: 'team:manage',
   SSO_PROVIDER_VIEW: 'sso-provider:view',
   SSO_PROVIDER_MANAGE: 'sso-provider:manage',
+  WORKSPACE_VIEW: 'workspace:view',
+  WORKSPACE_CREATE: 'workspace:create',
+  WORKSPACE_UPDATE: 'workspace:update',
+  WORKSPACE_ARCHIVE: 'workspace:archive',
 } as const
 
 export type PermissionCode = typeof PERMISSIONS[keyof typeof PERMISSIONS]

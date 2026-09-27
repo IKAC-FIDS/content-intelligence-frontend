@@ -4,8 +4,11 @@ import { Dashboard } from '@/app/Dashboard'
 import { NotFoundPage } from '@/app/NotFoundPage'
 import { AppShell } from '@/app/shell/AppShell'
 import { LoginPage } from '@/features/auth/pages/LoginPage'
+import { WorkspaceManagementPage } from '@/features/workspaces/WorkspaceManagementPage'
+import { PermissionBoundary } from '@/app/PermissionBoundary'
 import { initializeSession } from '@/lib/auth'
 import { getProtectedRouteDecision } from '@/lib/navigation'
+import { PERMISSIONS } from '@/lib/permissions'
 import { useAuthStore } from '@/store/authStore'
 
 export function Protected({ children }: { children: ReactNode }) {
@@ -31,6 +34,7 @@ export default function App() {
     <Route path="/login" element={<LoginPage />} />
     <Route element={<Protected><AppShell /></Protected>}>
       <Route index element={<Dashboard />} />
+      <Route path="workspaces" element={<PermissionBoundary requirement={{ allOf: [PERMISSIONS.WORKSPACE_VIEW] }}><WorkspaceManagementPage /></PermissionBoundary>} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>
   </Routes>

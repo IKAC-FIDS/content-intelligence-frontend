@@ -2,12 +2,18 @@ import { useEffect, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ForbiddenPage } from '@/app/ForbiddenPage'
 import { useAuthStore } from '@/store/authStore'
+import { WorkspaceProvider } from '@/features/workspaces/WorkspaceProvider'
 import { AppHeader } from './AppHeader'
 import { AppSidebar } from './AppSidebar'
 
 const sidebarStorageKey = 'content-intelligence-sidebar-collapsed'
 
 export function AppShell() {
+  const tenantId = useAuthStore((state) => state.user?.organizationId ?? 'no-tenant')
+  return <WorkspaceProvider key={tenantId}><AppShellContent /></WorkspaceProvider>
+}
+
+function AppShellContent() {
   const [collapsed, setCollapsed] = useState(() => localStorage.getItem(sidebarStorageKey) === 'true')
   const [mobileOpen, setMobileOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(() => matchMedia('(max-width: 900px)').matches)

@@ -1,5 +1,5 @@
-import { Home } from 'lucide-react'
-import { satisfiesPermissionRequirement, type PermissionRequirement } from '@/lib/permissions'
+import { BriefcaseBusiness, Home } from 'lucide-react'
+import { PERMISSIONS, satisfiesPermissionRequirement, type PermissionRequirement } from '@/lib/permissions'
 
 export interface NavigationItem {
   id: string
@@ -13,7 +13,10 @@ export interface NavigationGroup { id: string; label?: string; items: Navigation
 export interface BreadcrumbItem { label: string; href?: string }
 
 export const navigationGroups: NavigationGroup[] = [
-  { id: 'main', items: [{ id: 'home', label: 'خانه', href: '/', icon: Home }] },
+  { id: 'main', items: [
+    { id: 'home', label: 'خانه', href: '/', icon: Home },
+    { id: 'workspaces', label: 'فضاهای کاری', href: '/workspaces', icon: BriefcaseBusiness, permission: { allOf: [PERMISSIONS.WORKSPACE_VIEW] } },
+  ] },
 ]
 
 export const navigationItems = navigationGroups.flatMap((group) => group.items)

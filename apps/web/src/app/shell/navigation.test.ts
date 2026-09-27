@@ -4,8 +4,8 @@ import { PERMISSIONS } from '@/lib/permissions'
 import { filterNavigationGroups, getBreadcrumbs, isNavigationItemActive, navigationItems, type NavigationGroup } from './navigation'
 
 describe('application shell navigation', () => {
-  it('contains only the currently valid home route', () => {
-    expect(navigationItems.map(({ href }) => href)).toEqual(['/'])
+  it('contains the valid home and workspace routes', () => {
+    expect(navigationItems.map(({ href }) => href)).toEqual(['/', '/workspaces'])
   })
 
   it('matches the home route exactly', () => {
@@ -15,6 +15,8 @@ describe('application shell navigation', () => {
 
   it('uses route metadata for breadcrumbs and a safe unknown fallback', () => {
     expect(getBreadcrumbs('/')).toEqual([{ label: 'خانه', href: '/' }])
+    expect(getBreadcrumbs('/workspaces', [PERMISSIONS.WORKSPACE_VIEW])).toEqual([{ label: 'فضاهای کاری', href: '/workspaces' }])
+    expect(getBreadcrumbs('/workspaces')).toEqual([{ label: 'دسترسی محدود' }])
     expect(getBreadcrumbs('/legacy')).toEqual([{ label: 'صفحه نامعتبر' }])
   })
 
