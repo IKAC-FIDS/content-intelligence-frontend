@@ -17,3 +17,4 @@
 @media(max-width:560px){.login-card{padding:28px 22px}.theme-selector button span{display:none}.access-panel{padding:20px}}
 @media(max-width:560px){.shell-header{height:68px;padding-inline:12px}.shell-header-actions{gap:6px}.account-popover{position:fixed;top:74px;inset-inline:12px;width:auto}.page-header{display:grid}.page-header h1{font-size:26px}.route-state-page{min-height:calc(100vh - 68px)}.access-panel{padding:20px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+.sidebar-group{display:grid;gap:6px}.sidebar-group-label{padding-inline:14px;color:var(--muted);font-size:11px}
