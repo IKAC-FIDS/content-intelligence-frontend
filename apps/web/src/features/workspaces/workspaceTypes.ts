@@ -1,5 +1,6 @@
 import type { Language } from '@/features/languages/languageTypes'
 import type { IntelligenceDomain } from '@/features/intelligence-domains/intelligenceDomainTypes'
+import type { Topic } from '@/features/topics/topicTypes'
 
 export type WorkspaceStatus = 'ACTIVE' | 'ARCHIVED'
 
@@ -15,6 +16,7 @@ export interface Workspace {
   inputLanguages: Language[]
   outputLanguages: Language[]
   domains: IntelligenceDomain[]
+  topics: Topic[]
   timezone: string
   archivedAt: string | null
   createdAt: string
@@ -49,6 +51,7 @@ export interface CreateWorkspaceInput {
   outputLanguageIds?: string[]
   defaultLanguageId?: string
   domainIds?: string[]
+  topicIds?: string[]
   timezone?: string
 }
 
@@ -58,5 +61,6 @@ export interface UpdateWorkspaceInput {
   outputLanguageIds?: string[]
   defaultLanguageId?: string | null
   domainIds?: string[]
+  topicIds?: string[]
   timezone?: string
 }

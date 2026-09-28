@@ -5,7 +5,7 @@ import { filterNavigationGroups, getBreadcrumbs, isNavigationItemActive, navigat
 
 describe('application shell navigation', () => {
   it('contains the valid product and platform routes', () => {
-    expect(navigationItems.map(({ href }) => href)).toEqual(['/', '/workspaces', '/admin/languages', '/admin/intelligence-domains'])
+    expect(navigationItems.map(({ href }) => href)).toEqual(['/', '/workspaces', '/admin/languages', '/admin/intelligence-domains', '/admin/topics'])
   })
 
   it('matches the home route exactly', () => {
@@ -20,6 +20,7 @@ describe('application shell navigation', () => {
     expect(getBreadcrumbs('/admin/languages', [], true)).toEqual([{ label: 'مدیریت زبان‌ها', href: '/admin/languages' }])
     expect(getBreadcrumbs('/admin/languages')).toEqual([{ label: 'دسترسی محدود' }])
     expect(getBreadcrumbs('/admin/intelligence-domains', [], true)).toEqual([{ label: 'مدیریت حوزه‌ها', href: '/admin/intelligence-domains' }])
+    expect(getBreadcrumbs('/admin/topics', [], true)).toEqual([{ label: 'مدیریت موضوع‌ها', href: '/admin/topics' }])
     expect(getBreadcrumbs('/legacy')).toEqual([{ label: 'صفحه نامعتبر' }])
   })
 
@@ -27,6 +28,7 @@ describe('application shell navigation', () => {
     expect(filterNavigationGroups(navigationGroups, [PERMISSIONS.WORKSPACE_VIEW], false).flatMap(group => group.items).some(item => item.id === 'languages')).toBe(false)
     expect(filterNavigationGroups(navigationGroups, [], true).flatMap(group => group.items).some(item => item.id === 'languages')).toBe(true)
     expect(filterNavigationGroups(navigationGroups, [], true).flatMap(group => group.items).some(item => item.id === 'intelligence-domains')).toBe(true)
+    expect(filterNavigationGroups(navigationGroups, [], true).flatMap(group => group.items).some(item => item.id === 'topics')).toBe(true)
   })
 
   it('filters protected items and removes empty groups', () => {

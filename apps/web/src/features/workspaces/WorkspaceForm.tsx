@@ -6,6 +6,9 @@ import type { Language } from '@/features/languages/languageTypes'
 import { IntelligenceDomainMultiSelect } from '@/features/intelligence-domains/IntelligenceDomainMultiSelect'
 import { listAllSelectableIntelligenceDomains } from '@/features/intelligence-domains/intelligenceDomainApi'
 import type { IntelligenceDomain } from '@/features/intelligence-domains/intelligenceDomainTypes'
+import { TopicMultiSelect } from '@/features/topics/TopicMultiSelect'
+import { listAllSelectableTopics } from '@/features/topics/topicApi'
+import type { Topic } from '@/features/topics/topicTypes'
 import { normalizeApiError } from '@/lib/apiError'
 import type { CreateWorkspaceInput, UpdateWorkspaceInput, Workspace } from './workspaceTypes'
 
@@ -16,6 +19,7 @@ const supportedTimezones = (() => {
 
 export function mergeLanguageOptions(active: Language[], existing: Language[]) { return [...new Map([...active, ...existing].map((language) => [language.id, language])).values()] }
 export function mergeDomainOptions(active: IntelligenceDomain[], existing: IntelligenceDomain[]) { return [...new Map([...active, ...existing].map((domain) => [domain.id, domain])).values()] }
+export function mergeTopicOptions(active: Topic[], existing: Topic[]) { return [...new Map([...active, ...existing].map((topic) => [topic.id, topic])).values()] }
 
 export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
   workspace?: Workspace
@@ -31,13 +35,18 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
   const [languageError, setLanguageError] = useState<string | null>(null)
   const [domains, setDomains] = useState<IntelligenceDomain[]>([])
   const [domainError, setDomainError] = useState<string | null>(null)
+  const [topics, setTopics] = useState<Topic[]>([])
+  const [topicError, setTopicError] = useState<string | null>(null)
   const [inputLanguageIds, setInputLanguageIds] = useState(workspace?.inputLanguages.map((language) => language.id) ?? [])
   const [outputLanguageIds, setOutputLanguageIds] = useState(workspace?.outputLanguages.map((language) => language.id) ?? [])
   const [defaultLanguageId, setDefaultLanguageId] = useState(workspace?.defaultLanguageId ?? '')
   const [domainIds, setDomainIds] = useState(workspace?.domains.map((domain) => domain.id) ?? [])
+  const [topicIds, setTopicIds] = useState(workspace?.topics.map((topic) => topic.id) ?? [])
   const timezoneOptions = useMemo(() => supportedTimezones, [])
   useEffect(() => { void listAllSelectableLanguages().then((active) => setLanguages(mergeLanguageOptions(active, [...(workspace?.inputLanguages ?? []), ...(workspace?.outputLanguages ?? [])]))).catch((reason) => setLanguageError(normalizeApiError(reason).message)) }, [workspace])
   useEffect(() => { void listAllSelectableIntelligenceDomains().then((active) => setDomains(mergeDomainOptions(active, workspace?.domains ?? []))).catch((reason) => setDomainError(normalizeApiError(reason).message)) }, [workspace])
+  useEffect(() => { void listAllSelectableTopics().then((active) => setTopics(mergeTopicOptions(active, workspace?.topics ?? []))).catch((reason) => setTopicError(normalizeApiError(reason).message)) }, [workspace])
+  const incompatibleTopics = useMemo(() => domainIds.length ? topics.filter((topic) => topicIds.includes(topic.id) && !topic.domains.some((domain) => domainIds.includes(domain.id))) : [], [domainIds, topicIds, topics])
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -48,6 +57,7 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
       outputLanguageIds,
       defaultLanguageId: defaultLanguageId || (workspace ? null : undefined),
       domainIds,
+      topicIds,
     }
     await onSubmit(workspace ? common : { ...common, code: code.trim() })
   }
@@ -60,7 +70,9 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
     <datalist id="workspace-timezones">{timezoneOptions.map((value) => <option key={value} value={value} />)}</datalist>
     {languageError ? <div className="form-error" role="alert">{languageError}</div> : <><LanguageMultiSelect label="زبان‌های ورودی" languages={languages} value={inputLanguageIds} onChange={setInputLanguageIds} /><LanguageMultiSelect label="زبان‌های خروجی" languages={languages} value={outputLanguageIds} onChange={(ids) => { setOutputLanguageIds(ids); if (defaultLanguageId && !ids.includes(defaultLanguageId)) setDefaultLanguageId('') }} /><Label>زبان خروجی پیش‌فرض<select className="ui-input" value={defaultLanguageId} onChange={(event) => setDefaultLanguageId(event.target.value)}><option value="">بدون زبان پیش‌فرض</option>{languages.filter((language) => outputLanguageIds.includes(language.id)).map((language) => <option key={language.id} value={language.id}>{language.nativeName} — {language.name} ({language.code})</option>)}</select></Label></>}
     {domainError ? <div className="form-error" role="alert">{domainError}</div> : <IntelligenceDomainMultiSelect domains={domains} value={domainIds} onChange={setDomainIds} />}
+    {topicError ? <div className="form-error" role="alert">{topicError}</div> : <TopicMultiSelect topics={topics} domainIds={domainIds} value={topicIds} onChange={setTopicIds} />}
+    {incompatibleTopics.length > 0 && <div className="form-error" role="alert">برای حذف حوزه، ابتدا موضوع‌های ناسازگار را بردارید: {incompatibleTopics.map((topic) => topic.name).join('، ')}</div>}
     {error && <div className="form-error" role="alert">{error}</div>}
-    <footer><Button type="button" variant="secondary" disabled={busy} onClick={onCancel}>انصراف</Button><Button type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : workspace ? 'ذخیره تغییرات' : 'ایجاد فضای کاری'}</Button></footer>
+    <footer><Button type="button" variant="secondary" disabled={busy} onClick={onCancel}>انصراف</Button><Button type="submit" disabled={busy || incompatibleTopics.length > 0}>{busy ? 'در حال ذخیره…' : workspace ? 'ذخیره تغییرات' : 'ایجاد فضای کاری'}</Button></footer>
   </form>
 }
