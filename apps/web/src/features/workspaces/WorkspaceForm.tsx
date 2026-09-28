@@ -1,5 +1,9 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Button, Input, Label } from '@/components/ui'
+import { LanguageMultiSelect } from '@/features/languages/LanguageMultiSelect'
+import { listAllSelectableLanguages } from '@/features/languages/languageApi'
+import type { Language } from '@/features/languages/languageTypes'
+import { normalizeApiError } from '@/lib/apiError'
 import type { CreateWorkspaceInput, UpdateWorkspaceInput, Workspace } from './workspaceTypes'
 
 const supportedTimezones = (() => {
@@ -7,7 +11,7 @@ const supportedTimezones = (() => {
   return supportedValuesOf?.('timeZone') ?? ['Asia/Tehran', 'UTC']
 })()
 
-export const workspaceLanguageCodePattern = '[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|\\d{3}))?(?:-[A-Za-z0-9]{5,8}|-\\d[A-Za-z0-9]{3})*'
+export function mergeLanguageOptions(active: Language[], existing: Language[]) { return [...new Map([...active, ...existing].map((language) => [language.id, language])).values()] }
 
 export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
   workspace?: Workspace
@@ -19,15 +23,22 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
   const [name, setName] = useState(workspace?.name ?? '')
   const [code, setCode] = useState(workspace?.code ?? '')
   const [timezone, setTimezone] = useState(workspace?.timezone ?? 'Asia/Tehran')
-  const [defaultLanguageCode, setDefaultLanguageCode] = useState(workspace?.defaultLanguageCode ?? '')
+  const [languages, setLanguages] = useState<Language[]>([])
+  const [languageError, setLanguageError] = useState<string | null>(null)
+  const [inputLanguageIds, setInputLanguageIds] = useState(workspace?.inputLanguages.map((language) => language.id) ?? [])
+  const [outputLanguageIds, setOutputLanguageIds] = useState(workspace?.outputLanguages.map((language) => language.id) ?? [])
+  const [defaultLanguageId, setDefaultLanguageId] = useState(workspace?.defaultLanguageId ?? '')
   const timezoneOptions = useMemo(() => supportedTimezones, [])
+  useEffect(() => { void listAllSelectableLanguages().then((active) => setLanguages(mergeLanguageOptions(active, [...(workspace?.inputLanguages ?? []), ...(workspace?.outputLanguages ?? [])]))).catch((reason) => setLanguageError(normalizeApiError(reason).message)) }, [workspace])
 
   async function submit(event: FormEvent) {
     event.preventDefault()
     const common = {
       name: name.trim(),
       timezone,
-      defaultLanguageCode: defaultLanguageCode.trim() || (workspace ? null : undefined),
+      inputLanguageIds,
+      outputLanguageIds,
+      defaultLanguageId: defaultLanguageId || (workspace ? null : undefined),
     }
     await onSubmit(workspace ? common : { ...common, code: code.trim() })
   }
@@ -38,8 +49,7 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
     <small id="workspace-code-help">کد پس از ایجاد قابل تغییر نیست.</small>
     <Label>منطقه زمانی<Input dir="ltr" list="workspace-timezones" value={timezone} required onChange={(event) => setTimezone(event.target.value)} /></Label>
     <datalist id="workspace-timezones">{timezoneOptions.map((value) => <option key={value} value={value} />)}</datalist>
-    <Label>کد زبان پیش‌فرض<Input dir="ltr" value={defaultLanguageCode} maxLength={35} pattern={workspaceLanguageCodePattern} placeholder="fa-IR" onChange={(event) => setDefaultLanguageCode(event.target.value)} /></Label>
-    <small>این مقدار موقت و اختیاری است؛ مدیریت زبان‌ها در مرحله بعد اضافه می‌شود.</small>
+    {languageError ? <div className="form-error" role="alert">{languageError}</div> : <><LanguageMultiSelect label="زبان‌های ورودی" languages={languages} value={inputLanguageIds} onChange={setInputLanguageIds} /><LanguageMultiSelect label="زبان‌های خروجی" languages={languages} value={outputLanguageIds} onChange={(ids) => { setOutputLanguageIds(ids); if (defaultLanguageId && !ids.includes(defaultLanguageId)) setDefaultLanguageId('') }} /><Label>زبان خروجی پیش‌فرض<select className="ui-input" value={defaultLanguageId} onChange={(event) => setDefaultLanguageId(event.target.value)}><option value="">بدون زبان پیش‌فرض</option>{languages.filter((language) => outputLanguageIds.includes(language.id)).map((language) => <option key={language.id} value={language.id}>{language.nativeName} — {language.name} ({language.code})</option>)}</select></Label></>}
     {error && <div className="form-error" role="alert">{error}</div>}
     <footer><Button type="button" variant="secondary" disabled={busy} onClick={onCancel}>انصراف</Button><Button type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : workspace ? 'ذخیره تغییرات' : 'ایجاد فضای کاری'}</Button></footer>
   </form>

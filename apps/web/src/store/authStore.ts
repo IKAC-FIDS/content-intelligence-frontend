@@ -11,6 +11,7 @@ export interface AuthUser {
   roleCode: string
   roleName: string
   avatarObjectKey: string | null
+  platformAdmin: boolean
 }
 
 export interface AuthSession {

@@ -13,7 +13,8 @@ interface AppSidebarProps {
 
 export function AppSidebar({ collapsed, isMobile, mobileOpen, onCollapse, onMobileClose }: AppSidebarProps) {
   const permissions = useAuthStore((state) => state.user?.permissions ?? [])
-  const visibleGroups = filterNavigationGroups(navigationGroups, permissions)
+  const platformAdmin = useAuthStore((state) => state.user?.platformAdmin ?? false)
+  const visibleGroups = filterNavigationGroups(navigationGroups, permissions, platformAdmin)
   return <>
     <button className={`shell-backdrop ${mobileOpen ? 'is-visible' : ''}`} type="button" aria-label="بستن منوی اصلی" onClick={onMobileClose} />
     <aside id="app-sidebar" className={`app-sidebar ${collapsed ? 'is-collapsed' : ''} ${mobileOpen ? 'is-mobile-open' : ''}`} aria-label="منوی اصلی" aria-hidden={isMobile && !mobileOpen ? true : undefined} aria-modal={isMobile && mobileOpen ? true : undefined} role={isMobile && mobileOpen ? 'dialog' : undefined} inert={isMobile && !mobileOpen ? true : undefined}>

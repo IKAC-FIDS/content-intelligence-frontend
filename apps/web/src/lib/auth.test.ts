@@ -11,7 +11,7 @@ const session = (token = 'access-one'): AuthSession => ({
   user: {
     id: 'user-1', fullName: 'Test User', email: 'test@example.invalid', role: 'ADMIN',
     organizationId: 'organization-1', permissions: ['organization:view'], roleId: 'role-1',
-    roleCode: 'ADMIN', roleName: 'Administrator', avatarObjectKey: null,
+    roleCode: 'ADMIN', roleName: 'Administrator', avatarObjectKey: null, platformAdmin: false,
   },
 })
 

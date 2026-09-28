@@ -4,7 +4,7 @@ import type { Workspace } from './workspaceTypes'
 
 const workspace = (id: string, status: Workspace['status'] = 'ACTIVE'): Workspace => ({
   id, organizationId: 'tenant-a', name: `Workspace ${id}`, code: id, status,
-  settings: {}, defaultLanguageCode: null, timezone: 'Asia/Tehran', archivedAt: status === 'ARCHIVED' ? '2026-01-01T00:00:00.000Z' : null,
+  settings: {}, defaultLanguageId: null, defaultLanguage: null, inputLanguages: [], outputLanguages: [], timezone: 'Asia/Tehran', archivedAt: status === 'ARCHIVED' ? '2026-01-01T00:00:00.000Z' : null,
   createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z',
 })
 

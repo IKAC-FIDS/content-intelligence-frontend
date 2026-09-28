@@ -33,7 +33,7 @@ describe('permission route decisions', () => {
 })
 
 describe('permission freshness', () => {
-  const session = (permissions: string[]): AuthSession => ({ accessToken: 'token', accessTokenExpiresIn: '15m', user: { id: 'user', fullName: 'User', email: 'user@example.invalid', role: 'CUSTOM', organizationId: 'org', permissions, roleId: 'role', roleCode: 'CUSTOM', roleName: 'Custom', avatarObjectKey: null } })
+  const session = (permissions: string[]): AuthSession => ({ accessToken: 'token', accessTokenExpiresIn: '15m', user: { id: 'user', fullName: 'User', email: 'user@example.invalid', role: 'CUSTOM', organizationId: 'org', permissions, roleId: 'role', roleCode: 'CUSTOM', roleName: 'Custom', avatarObjectKey: null, platformAdmin: false } })
   beforeEach(() => useAuthStore.getState().clear())
   it('replaces permissions when a new tenant session is installed', () => {
     useAuthStore.getState().setSession(session([PERMISSIONS.USER_VIEW]))

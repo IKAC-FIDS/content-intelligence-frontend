@@ -1,3 +1,5 @@
+import type { Language } from '@/features/languages/languageTypes'
+
 export type WorkspaceStatus = 'ACTIVE' | 'ARCHIVED'
 
 export interface Workspace {
@@ -7,7 +9,10 @@ export interface Workspace {
   code: string
   status: WorkspaceStatus
   settings: Record<string, unknown>
-  defaultLanguageCode: string | null
+  defaultLanguageId: string | null
+  defaultLanguage: Language | null
+  inputLanguages: Language[]
+  outputLanguages: Language[]
   timezone: string
   archivedAt: string | null
   createdAt: string
@@ -38,12 +43,16 @@ export interface WorkspacePage {
 export interface CreateWorkspaceInput {
   name: string
   code: string
-  defaultLanguageCode?: string
+  inputLanguageIds?: string[]
+  outputLanguageIds?: string[]
+  defaultLanguageId?: string
   timezone?: string
 }
 
 export interface UpdateWorkspaceInput {
   name?: string
-  defaultLanguageCode?: string | null
+  inputLanguageIds?: string[]
+  outputLanguageIds?: string[]
+  defaultLanguageId?: string | null
   timezone?: string
 }

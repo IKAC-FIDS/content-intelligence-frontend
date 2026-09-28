@@ -10,6 +10,8 @@ import { initializeSession } from '@/lib/auth'
 import { getProtectedRouteDecision } from '@/lib/navigation'
 import { PERMISSIONS } from '@/lib/permissions'
 import { useAuthStore } from '@/store/authStore'
+import { PlatformBoundary } from '@/app/PlatformBoundary'
+import { LanguageAdminPage } from '@/features/languages/LanguageAdminPage'
 
 export function Protected({ children }: { children: ReactNode }) {
   const status = useAuthStore((state) => state.status)
@@ -35,6 +37,7 @@ export default function App() {
     <Route element={<Protected><AppShell /></Protected>}>
       <Route index element={<Dashboard />} />
       <Route path="workspaces" element={<PermissionBoundary requirement={{ allOf: [PERMISSIONS.WORKSPACE_VIEW] }}><WorkspaceManagementPage /></PermissionBoundary>} />
+      <Route path="admin/languages" element={<PlatformBoundary><LanguageAdminPage /></PlatformBoundary>} />
       <Route path="*" element={<NotFoundPage />} />
     </Route>
   </Routes>

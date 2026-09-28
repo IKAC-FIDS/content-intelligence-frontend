@@ -7,7 +7,7 @@ vi.mock('@/lib/api', async (importOriginal) => {
   return { ...original, api: { get: vi.fn(), post: vi.fn(), patch: vi.fn() } }
 })
 
-const record = { id: 'workspace-a', organizationId: 'tenant-a', name: 'A', code: 'a', status: 'ACTIVE', settings: {}, defaultLanguageCode: null, timezone: 'Asia/Tehran', archivedAt: null, createdAt: 'now', updatedAt: 'now' }
+const record = { id: 'workspace-a', organizationId: 'tenant-a', name: 'A', code: 'a', status: 'ACTIVE', settings: {}, defaultLanguageId: null, defaultLanguage: null, inputLanguages: [], outputLanguages: [], timezone: 'Asia/Tehran', archivedAt: null, createdAt: 'now', updatedAt: 'now' }
 const envelope = (data: unknown) => ({ success: true, data })
 
 describe('workspace API', () => {

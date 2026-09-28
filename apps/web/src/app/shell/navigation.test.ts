@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import { Home } from 'lucide-react'
 import { PERMISSIONS } from '@/lib/permissions'
-import { filterNavigationGroups, getBreadcrumbs, isNavigationItemActive, navigationItems, type NavigationGroup } from './navigation'
+import { filterNavigationGroups, getBreadcrumbs, isNavigationItemActive, navigationGroups, navigationItems, type NavigationGroup } from './navigation'
 
 describe('application shell navigation', () => {
-  it('contains the valid home and workspace routes', () => {
-    expect(navigationItems.map(({ href }) => href)).toEqual(['/', '/workspaces'])
+  it('contains the valid product and platform routes', () => {
+    expect(navigationItems.map(({ href }) => href)).toEqual(['/', '/workspaces', '/admin/languages'])
   })
 
   it('matches the home route exactly', () => {
@@ -17,7 +17,14 @@ describe('application shell navigation', () => {
     expect(getBreadcrumbs('/')).toEqual([{ label: 'خانه', href: '/' }])
     expect(getBreadcrumbs('/workspaces', [PERMISSIONS.WORKSPACE_VIEW])).toEqual([{ label: 'فضاهای کاری', href: '/workspaces' }])
     expect(getBreadcrumbs('/workspaces')).toEqual([{ label: 'دسترسی محدود' }])
+    expect(getBreadcrumbs('/admin/languages', [], true)).toEqual([{ label: 'مدیریت زبان‌ها', href: '/admin/languages' }])
+    expect(getBreadcrumbs('/admin/languages')).toEqual([{ label: 'دسترسی محدود' }])
     expect(getBreadcrumbs('/legacy')).toEqual([{ label: 'صفحه نامعتبر' }])
+  })
+
+  it('shows platform navigation only to explicit platform authority', () => {
+    expect(filterNavigationGroups(navigationGroups, [PERMISSIONS.WORKSPACE_VIEW], false).flatMap(group => group.items).some(item => item.id === 'languages')).toBe(false)
+    expect(filterNavigationGroups(navigationGroups, [], true).flatMap(group => group.items).some(item => item.id === 'languages')).toBe(true)
   })
 
   it('filters protected items and removes empty groups', () => {
