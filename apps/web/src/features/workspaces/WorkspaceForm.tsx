@@ -7,6 +7,8 @@ const supportedTimezones = (() => {
   return supportedValuesOf?.('timeZone') ?? ['Asia/Tehran', 'UTC']
 })()
 
+export const workspaceLanguageCodePattern = '[A-Za-z]{2,3}(?:-[A-Za-z]{4})?(?:-(?:[A-Za-z]{2}|\\d{3}))?(?:-[A-Za-z0-9]{5,8}|-\\d[A-Za-z0-9]{3})*'
+
 export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
   workspace?: Workspace
   busy: boolean
@@ -36,7 +38,7 @@ export function WorkspaceForm({ workspace, busy, error, onCancel, onSubmit }: {
     <small id="workspace-code-help">کد پس از ایجاد قابل تغییر نیست.</small>
     <Label>منطقه زمانی<Input dir="ltr" list="workspace-timezones" value={timezone} required onChange={(event) => setTimezone(event.target.value)} /></Label>
     <datalist id="workspace-timezones">{timezoneOptions.map((value) => <option key={value} value={value} />)}</datalist>
-    <Label>کد زبان پیش‌فرض<Input dir="ltr" value={defaultLanguageCode} maxLength={35} pattern="[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*" placeholder="fa-IR" onChange={(event) => setDefaultLanguageCode(event.target.value)} /></Label>
+    <Label>کد زبان پیش‌فرض<Input dir="ltr" value={defaultLanguageCode} maxLength={35} pattern={workspaceLanguageCodePattern} placeholder="fa-IR" onChange={(event) => setDefaultLanguageCode(event.target.value)} /></Label>
     <small>این مقدار موقت و اختیاری است؛ مدیریت زبان‌ها در مرحله بعد اضافه می‌شود.</small>
     {error && <div className="form-error" role="alert">{error}</div>}
     <footer><Button type="button" variant="secondary" disabled={busy} onClick={onCancel}>انصراف</Button><Button type="submit" disabled={busy}>{busy ? 'در حال ذخیره…' : workspace ? 'ذخیره تغییرات' : 'ایجاد فضای کاری'}</Button></footer>
