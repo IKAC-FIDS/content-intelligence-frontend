@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, Home, Languages } from 'lucide-react'
+import { Boxes, BriefcaseBusiness, Home, Languages } from 'lucide-react'
 import { PERMISSIONS, satisfiesPermissionRequirement, type PermissionRequirement } from '@/lib/permissions'
 
 export interface NavigationItem {
@@ -18,6 +18,7 @@ export const navigationGroups: NavigationGroup[] = [
     { id: 'home', label: 'خانه', href: '/', icon: Home },
     { id: 'workspaces', label: 'فضاهای کاری', href: '/workspaces', icon: BriefcaseBusiness, permission: { allOf: [PERMISSIONS.WORKSPACE_VIEW] } },
     { id: 'languages', label: 'مدیریت زبان‌ها', href: '/admin/languages', icon: Languages, platformAdminOnly: true },
+    { id: 'intelligence-domains', label: 'مدیریت حوزه‌ها', href: '/admin/intelligence-domains', icon: Boxes, platformAdminOnly: true },
   ] },
 ]
 
